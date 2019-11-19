@@ -4,18 +4,21 @@ const apiAdapter = require('./apiAdapter')
 
 // Define the base url for the service itself
 // e.g. api.ewjresearch.com/blog
-const BASE_URL = 'localhost:3000' 
-const api = apiAdapter(BASE_URL)
+const BASE_URL = 'http://localhost:8000'
+var api = apiAdapter(BASE_URL)
 
 /**
  * Define each of the routes in the blog service
  */
-router.get('/posts', (req,res) => {
-    api.get(req.path).then(resp => {
-        res.send(resp.data)
-    }).catch(function(err) {
-        res.send(err.message)
-    })
+router.get('/posts', async (req,res) => {
+    console.log('API Gateway Posts Request Hit')
+    api.get(req.path)
+        .then(function(response) {
+            res.send(response.data)
+        })
+        .catch(function(err) {
+            res.send(err.message)
+        })
 })
 
 module.exports = router;

@@ -34,4 +34,8 @@ userSchema.statics.fillable = function() {
     return attrs;
 }
 
+userSchema.statics.publicAttributes = function() {
+    var { __v, password, ...attrs } = this.schema.paths
+}
+
 module.exports = mongoose.model('User', userSchema)
