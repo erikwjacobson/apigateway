@@ -21,14 +21,16 @@ router.post('/register', async (req, res) => {
 
     try {
         const newUser = await user.save();
+        newUser = newUser.toObject()
+        User.hiddenAttributes().forEach(a => delete newUser[a])
         var token = jwt.sign(
-            { user: user[User.publicAttributes()] }, 
+            { user: newUser }, 
             process.env.APP_KEY, 
             { expiresIn: 86400 }
         )
         
         res.status(200) // TODO add secure:true when https is set up.
-            .cookie('token', token, { maxAge: 86400, httpOnly: true })
+            .cookie('token', token, { maxAge: 86400000, httpOnly: true })
             .json({ auth: true });
     } catch(err) {
         res.status(400).json({message:err.message})
@@ -45,15 +47,17 @@ router.post('/login', async (req, res) => {
         var passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
         
         if(!passwordIsValid) return res.status(401).send({ auth: false })
-        
+    
+        user = user.toObject()
+        User.hiddenAttributes().forEach(a => delete user[a])
         var token = jwt.sign(
-            { user: user[User.publicAttributes()] }, 
-            process.env.APP_KEY, 
+            { user:  user }, 
+            process.env.APP_KEY,
             { expiresIn: 86400 }
         )
 
         res.status(200) // TODO add secure:true when https is set up.
-            .cookie('token', token, { maxAge: 86400, httpOnly: true })
+            .cookie('token', token, { maxAge: 86400000, httpOnly: true })
             .json({ auth: true });
     } catch(err) {
         res.status(400).json({message:err.message})

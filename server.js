@@ -6,7 +6,6 @@ var app = express();
 var blogRouter = require('./routers/blogService')
 var authRouter = require('./routers/authentication')
 var cookieParser = require('cookie-parser')
-var authenticate = require('./middleware/authenticate')
 
 
 // Connect to MongoDB
@@ -16,22 +15,17 @@ db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('connected to database'));
 
 app.use(express.json())
-app.use(express.urlencoded());
+app.use(express.urlencoded())
 app.use(cookieParser())
 
- 
-axios.interceptors.request.use(request => {
-    console.log('Starting Request', request)
-    return request;
-})  
-
-// Define authentication router
+/**
+ * Define gateway routers 
+ */ 
 app.use(authRouter);
 
-// Use authenticate for each request
-app.use(authenticate.authenticate)
-
-// Define Each Microservice Router
+/**
+ * Micrservices
+ */
 app.use(blogRouter);
 
 

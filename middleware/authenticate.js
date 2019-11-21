@@ -20,8 +20,9 @@ async function authenticate(req, res, next) {
 
     // Clear Token Function
     function clearTokenAndNext() {
-        res.clearCookie("token");
+        res.clearCookie("token")
         res.status(403).json({message: 'User does not have permission to access this route.'})
+        next()
     }
 
     // Skip if there's no token
@@ -40,9 +41,8 @@ async function authenticate(req, res, next) {
         }
 
         // Attach user to request
-        // req.user = decodedToken.user
-        console.log('JWT Verified')
-        next();
+        req.user = decodedToken.user
+        next()
     })
 }
 

@@ -35,7 +35,15 @@ userSchema.statics.fillable = function() {
 }
 
 userSchema.statics.publicAttributes = function() {
+    // Define excluded attributes
     var { __v, password, ...attrs } = this.schema.paths
+    return Object.keys(attrs)
+}
+
+userSchema.statics.hiddenAttributes = function() {
+    // Define excluded attributes
+    var { _id, username, email, created_at, updated_at, permissions, ...attrs } = this.schema.paths
+    return Object.keys(attrs)
 }
 
 module.exports = mongoose.model('User', userSchema)
