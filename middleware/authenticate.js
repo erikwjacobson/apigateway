@@ -10,8 +10,6 @@ const jwt = require('jsonwebtoken')
  * @param {*} next 
  */
 async function authenticate(req, res, next) {
-    console.log('Authentication function hit.');
-
     // Get token secret to verify jwt
     const tokenSecret = process.env.APP_KEY
 
@@ -21,7 +19,7 @@ async function authenticate(req, res, next) {
     // Clear Token Function
     function clearTokenAndNext() {
         res.clearCookie("token")
-        res.status(403).json({message: 'User does not have permission to access this route.'})
+        res.status(403).json({message: 'Unauthenticated.'})
         next()
     }
 

@@ -9,27 +9,102 @@ const BASE_URL = 'http://localhost:8000'
 var api = apiAdapter(BASE_URL)
 
 /**
- * Define each of the routes in the blog service
+ * Get all of posts resouce
+ * No Authentication Required
+ * 
+ * /posts
+ * 
  */
 router.get('/posts', async (req,res) => {
-    api.get(req.path, req.body)
+    api.get(req.path)
     .then(function(response) {
-        res.send(response.data)
+        res.status(200).json(response.data)
     })
     .catch(function(err) {
-        res.send(err.message)
+        res.status(500).json({message: err.message})
     })
 })
 
-router.post('/posts', authenticate.authenticate, async (req,res) => {
-    req.body.user = req.user
-    api.post(req.path, req.body)
+/**
+ * Get a specific post resource
+ * No Authentication Required
+ * 
+ * /posts/:id
+ * 
+ */
+router.get('/posts/:id', async (req, res) => {
+    api.get(req.path)
     .then(function(response) {
-        res.send(response.data)
+        res.status(200).json(response.data)
     })
     .catch(function(err) {
-        res.send(err.message)
+        res.status(500).json({message: err.message})
     })
 })
+
+/**
+ * Create a new post resource
+ * Authentication Required
+ * 
+ * /posts
+ * 
+ */
+router.post('/posts', authenticate.authenticate, async (req,res) => {
+    // Attach authenticated user to body
+    req.body.user = req.user
+
+    // Post new post
+    api.post(req.path, req.body)
+    .then(function(response) {
+        res.status(200).json(response.data)
+    })
+    .catch(function(err) {
+        res.status(500).json({message: err.message})
+    })
+})
+
+/**
+ * Update an existing post resource
+ * Authentication Required
+ * 
+ * /posts/:id
+ * 
+ */
+router.patch('/posts/:id', authenticate.authenticate, async (req, res) => {
+    // Attach authenticated user to body
+    req.body.user = req.user
+    
+
+    // Post new post
+    api.patch(req.path, req.body)
+    .then(function(response) {
+        res.status(200).json(response.data)
+    })
+    .catch(function(err) {
+        res.status(500).json({message: err.message})
+    })
+})
+
+/**
+ * Update an existing post resource
+ * Authentication Required
+ * 
+ * /posts/:id
+ * 
+ */
+router.delete('/posts/:id', authenticate.authenticate, async (req, res) => {
+    // Attach authenticated user to body
+    req.body.user = req.user
+
+    // Post new post
+    api.patch(req.path, req.body)
+    .then(function(response) {
+        res.status(200).json(response.data)
+    })
+    .catch(function(err) {
+        res.status(500).json({message: err.message})
+    })
+})
+
 
 module.exports = router;

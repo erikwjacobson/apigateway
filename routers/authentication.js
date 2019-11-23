@@ -4,6 +4,7 @@ const router = express.Router()
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+var authenticate = require('../middleware/authenticate')
 
 /**
  * Register a new user
@@ -20,12 +21,12 @@ router.post('/register', async (req, res) => {
     user.password = hashedPassword
 
     try {
-        const newUser = await user.save();
+        var newUser = await user.save();
         newUser = newUser.toObject()
         User.hiddenAttributes().forEach(a => delete newUser[a])
         var token = jwt.sign(
-            { user: newUser }, 
-            process.env.APP_KEY, 
+            { user: newUser },
+            process.env.APP_KEY,
             { expiresIn: 86400 }
         )
         
@@ -62,6 +63,23 @@ router.post('/login', async (req, res) => {
     } catch(err) {
         res.status(400).json({message:err.message})
     }
+})
+
+/**
+ * Logout the current user
+ * 
+ * Requires Authentication
+ * 
+ */
+router.post('/logout', authenticate.authenticate, async (req, res) => {
+    // Clear the cookie
+    res.clearCookie("token")
+
+    // Clear the user from the request.
+    delete req.user
+
+    // Return success
+    res.status(200).json({message: 'Successfully logged the user out.'})
 })
 
 module.exports = router;
